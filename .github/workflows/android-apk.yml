@@ -54,11 +54,11 @@ jobs:
         run: cargo install cargo-ndk --locked
 
       - name: Build upstream Rust engine for Android ABIs
+        working-directory: native/android-bridge
         run: |
           cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -p 26 \
-            -o app/src/main/jniLibs \
-            build --manifest-path native/android-bridge/Cargo.toml --release
-
+            -o ../../app/src/main/jniLibs \
+            build --release
       - name: Package original upstream assets and notices
         run: |
           mkdir -p app/src/main/assets/upstream
