@@ -46,7 +46,11 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Install wasm-bindgen CLI
-        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+        run: |
+          # Cargo installs binaries into ~/.cargo/bin; expose that directory to later workflow steps.
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          cargo install wasm-bindgen-cli --version 0.2.129 --locked
+          "$HOME/.cargo/bin/wasm-bindgen" --version
 
       - name: Install upstream dependencies
         working-directory: upstream
