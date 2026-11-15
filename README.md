@@ -1,46 +1,37 @@
 # StykAnimate for Android
 
-An Android port of [StykAnimate](https://github.com/filippocalippo/StykAnimate-App), the open-source stick-figure animation editor. This project aims to bring the actual StykAnimate editor and animation engine to Android as an installable APK—not publish a website or a home-screen shortcut.
+A native Android port of [StykAnimate](https://github.com/filippocalippo/StykAnimate-App). The goal is to reuse the original Rust animation engine, document codecs, rendering/evaluation logic and licensed assets while replacing the desktop/browser presentation layer with a genuinely native Android interface.
 
-> **Status: port in progress.** The Android application, native integrations, and device testing are not yet complete. No APK is available until a build has been implemented and verified.
+> **Status: native port in progress.** The native-android branch contains the first JNI bridge and a basic native project-preview screen. It is an engineering prototype, not a complete animation editor or a verified release APK yet.
 
-## Project goals
+## Native architecture
 
-- Package the StykAnimate editor and its Rust/WebAssembly animation engine inside an Android application.
-- Replace the Electron desktop shell with an Android-native application shell.
-- Provide Android-native file opening and saving, autosave/recovery, sharing, and export integration.
-- Work offline after installation; projects remain on the device unless the user explicitly shares or exports them.
-- Support phones and tablets, portrait and landscape layouts, touch, stylus where available, and external keyboards.
-- Preserve supported StykAnimate, Pivot Animator, and Stick Nodes project compatibility.
-- Produce a signed universal APK and, where practical, smaller architecture-specific APKs.
+- **Android UI:** Kotlin and Android platform widgets; the final editor will use a fully native, responsive interface for phones and tablets.
+- **Engine:** upstream Rust crates compiled into Android shared libraries and called through JNI. The current bridge uses styk-engine, styk-raster, styk-render's platform-neutral view types and the upstream frame builder.
+- **Rendering:** upstream CPU rasterizer for the first native milestone. A hardware-accelerated Android renderer can be added after parity and device testing.
+- **Files:** Android document picker; initial preview prototype accepts .piv, .stk, .styk, .stkz, .stykmov and .json.
+- **Assets:** original upstream assets, fonts, licence and third-party notices are packaged locally in the APK.
+- **Offline:** no web page or remote website is used by the native application.
 
-Desktop-only features such as installed Windows codecs must not be assumed to work on Android. GPU support, video encoding, memory use, and long-animation performance must be tested on real devices. See [the Android port plan](docs/ANDROID-PORT-PLAN.md).
+## Build
 
-## Upstream project
+The GitHub Actions workflow checks out this repository and the upstream StykAnimate source, compiles the Rust bridge for arm64-v8a, armeabi-v7a and x86_64, packages the upstream assets, and builds a universal debug APK.
+
+The upstream checkout is expected at upstream/ while building. The Rust bridge manifest is native/android-bridge/Cargo.toml.
+
+## Upstream and licensing
 
 The starting point is **StykAnimate** by **Filippo Calippo**, available at [filippocalippo/StykAnimate-App](https://github.com/filippocalippo/StykAnimate-App). The upstream project is licensed under **GNU GPL version 3 or later**. This derivative must preserve applicable GPL terms, notices, and corresponding-source obligations. Read the upstream [LICENSE](https://github.com/filippocalippo/StykAnimate-App/blob/main/LICENSE) and [third-party notices](https://github.com/filippocalippo/StykAnimate-App/blob/main/THIRD_PARTY_NOTICES.md).
 
-## People and projects we acknowledge
+## Acknowledgements
 
-- **Filippo Calippo** — creator and maintainer of the original StykAnimate project; the upstream codebase is the foundation of this port.
-- **Peter Bone** — creator of Pivot Animator, an important influence on the stick-figure animation workflow and the .piv/.stk ecosystem.
-- **Ralph Damiano** — developer of Stick Nodes; its mobile stick-figure animation experience helped demonstrate how this kind of workflow can work on phones and tablets.
-- **The StykAnimate, Pivot Animator, and Stick Nodes communities** — animators and contributors whose work, feedback, tutorials, and creativity helped shape this kind of software.
+- **Filippo Calippo** — creator and maintainer of the original StykAnimate project; its source code is the foundation of this port.
+- **Peter Bone** — creator of Pivot Animator, an important influence on the stick-figure animation workflow and the .piv / .stk ecosystem.
+- **Ralph Damiano** — developer of Stick Nodes; its mobile stick-figure animation experience helped demonstrate how this workflow can work on phones and tablets.
+- **The StykAnimate, Pivot Animator and Stick Nodes communities** — animators and contributors whose work and feedback helped shape this category of software.
 
-These acknowledgements do not imply endorsement, partnership, or permission to use third-party trademarks or artwork.
-
-## Copyright and trademarks
-
-Copyright in the original StykAnimate source code remains with its respective copyright holder(s), including the upstream author and contributors. Copyright in third-party libraries, fonts, artwork, and other bundled material remains with their respective owners and is governed by their own licences. The GNU General Public License is published by the Free Software Foundation.
-
-**We do not claim ownership of the upstream StykAnimate code or third-party materials.** New Android-specific contributions must not remove or replace existing copyright notices.
-
-Pivot Animator and Stick Nodes are independent products. Their names are used only to identify compatibility and historical inspiration. This project is not affiliated with, sponsored by, or endorsed by Peter Bone, Pivot Animator, Ralph Damiano, ForTheLoss Games, or their respective rights holders.
-
-## Build status
-
-The Android port is being prepared. Build instructions and APK download links will be added only after the Android project and CI pipeline have been implemented and verified.
+These acknowledgements do not imply endorsement, partnership or permission to use third-party trademarks or artwork. Copyright in upstream and third-party material remains with its respective owners. New Android-specific contributions must not remove or replace existing copyright notices.
 
 ## Licence
 
-The intended licence is **GNU GPL-3.0-or-later**, consistent with upstream StykAnimate. See the upstream [licence text](https://github.com/filippocalippo/StykAnimate-App/blob/main/LICENSE). Third-party components retain their own licences; see [THIRD_PARTY_NOTICES.md](https://github.com/filippocalippo/StykAnimate-App/blob/main/THIRD_PARTY_NOTICES.md).
+The intended licence is **GNU GPL-3.0-or-later**, consistent with upstream StykAnimate. Third-party components retain their own licences; see the upstream third-party notices.
