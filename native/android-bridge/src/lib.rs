@@ -124,3 +124,21 @@ pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeClose(_en
         drop(unsafe { Box::from_raw(handle as *mut NativeSession) });
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::NativeSession;
+
+    #[test]
+    fn opens_and_renders_an_upstream_pivot_fixture() {
+        let mut session = NativeSession::new();
+        let source = include_bytes!("../../../upstream/engine/crates/styk-piv/tests/fixtures/legacy-v4.piv");
+        let message = session.open(source, "piv", "legacy-v4.piv").expect("upstream Pivot fixture should open");
+        assert!(message.starts_with("Opened "));
+        assert!(session.total_ticks > 0);
+
+        let pixels = session.render(0.0, 320, 180).expect("native engine should render the first frame");
+        assert_eq!(pixels.len(), 320 * 180 * 4);
+    }
+}
