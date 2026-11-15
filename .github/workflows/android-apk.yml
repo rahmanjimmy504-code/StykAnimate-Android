@@ -1,0 +1,77 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "*.gradle.kts"
+      - "gradle.properties"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Android port
+        uses: actions/checkout@v4
+
+      - name: Check out upstream StykAnimate source
+        uses: actions/checkout@v4
+        with:
+          repository: filippocalippo/StykAnimate-App
+          path: upstream
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: upstream/package-lock.json
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install upstream dependencies
+        working-directory: upstream
+        run: npm ci
+
+      - name: Build upstream Rust/WebAssembly engine
+        working-directory: upstream
+        run: node scripts/engine-build.mjs
+
+      - name: Build the local editor bundle
+        working-directory: upstream
+        run: npm run web:build
+
+      - name: Package editor assets into Android app
+        run: |
+          mkdir -p app/src/main/assets/stykanimate
+          cp -a upstream/build/web/. app/src/main/assets/stykanimate/
+          test -s app/src/main/assets/stykanimate/index.html
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: stykanimate-android-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
