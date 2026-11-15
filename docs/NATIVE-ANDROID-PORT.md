@@ -21,6 +21,8 @@ The native-android branch contains:
 
 This is a proof of engine integration and a native preview, not a complete animation editor. Editing, save, undo/redo, figure manipulation, onion skins, full timeline, native GPU acceleration and export remain to be implemented and tested.
 
+See [`docs/UI-PARITY.md`](UI-PARITY.md) for the mandatory visual and functional parity contract. The original upstream workspace structure, phone/tablet touch behaviour, and test gates are the source of truth for the native interface.
+
 ## Target architecture
 
 - UI: Kotlin Android UI (move to Jetpack Compose as the workspace grows), with native navigation, dialogs, menus, accessibility, keyboard/mouse support and responsive phone/tablet layouts.
