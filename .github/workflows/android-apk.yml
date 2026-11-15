@@ -35,21 +35,32 @@ jobs:
 
       - name: Set up stable Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
 
       - name: Set up pinned nightly Rust for threaded WebAssembly engine
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly-2026-09-15
           components: rust-src
-          targets: wasm32-unknown-unknown
+
+      # Install the WASM standard library explicitly for BOTH toolchains.
+      # The upstream build script invokes stable and pinned-nightly Cargo builds.
+      - name: Install and verify WebAssembly Rust targets
+        run: |
+          rustup target add wasm32-unknown-unknown --toolchain stable
+          rustup target add wasm32-unknown-unknown --toolchain nightly-2026-09-15
+          rustup component add rust-src --toolchain nightly-2026-09-15
+          echo "Stable targets:"
+          rustup target list --installed --toolchain stable
+          echo "Nightly targets:"
+          rustup target list --installed --toolchain nightly-2026-09-15
+          rustc +stable --print target-libdir --target wasm32-unknown-unknown
+          rustc +nightly-2026-09-15 --print target-libdir --target wasm32-unknown-unknown
 
       - name: Install wasm-bindgen CLI
         run: |
           # Cargo installs binaries into ~/.cargo/bin; expose that directory to later workflow steps.
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          cargo install wasm-bindgen-cli --version 0.2.129 --locked
+          cargo +stable install wasm-bindgen-cli --version 0.2.129 --locked
           "$HOME/.cargo/bin/wasm-bindgen" --version
 
       - name: Install upstream dependencies
