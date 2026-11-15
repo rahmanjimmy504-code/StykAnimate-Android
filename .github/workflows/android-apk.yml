@@ -53,6 +53,9 @@ jobs:
       - name: Install cargo-ndk
         run: cargo install cargo-ndk --locked
 
+      - name: Test native bridge against an upstream Pivot fixture
+        run: cargo test --manifest-path native/android-bridge/Cargo.toml
+
       - name: Build upstream Rust engine for Android ABIs
         working-directory: native/android-bridge
         run: |
