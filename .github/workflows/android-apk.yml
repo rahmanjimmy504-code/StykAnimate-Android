@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: filippocalippo/StykAnimate-App
+          ref: 60d8f5f895192230681d89996ef7f763b12de829
           path: upstream
 
       - name: Set up Java
