@@ -33,10 +33,20 @@ jobs:
           cache: npm
           cache-dependency-path: upstream/package-lock.json
 
-      - name: Set up Rust toolchain
+      - name: Set up stable Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+
+      - name: Set up pinned nightly Rust for threaded WebAssembly engine
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2026-09-15
+          components: rust-src
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-bindgen CLI
+        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
 
       - name: Install upstream dependencies
         working-directory: upstream
