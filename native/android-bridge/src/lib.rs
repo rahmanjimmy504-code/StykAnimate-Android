@@ -80,12 +80,12 @@ unsafe fn session_mut<'a>(handle: jlong) -> Option<&'a mut NativeSession> {
     Some(unsafe { &mut *(handle as *mut NativeSession) })
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeCreate(_env: JNIEnv, _this: JObject) -> jlong {
     Box::into_raw(Box::new(NativeSession::new())) as jlong
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeOpenProject(
     mut env: JNIEnv, _this: JObject, handle: jlong, bytes: JByteArray, extension: JString, name: JString
 ) -> jstring {
@@ -100,12 +100,12 @@ pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeOpenProje
     env.new_string(message).map(|value| value.into_raw()).unwrap_or(std::ptr::null_mut())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeGetTotalTicks(_env: JNIEnv, _this: JObject, handle: jlong) -> jint {
     unsafe { session_mut(handle) }.map_or(0, |session| session.total_ticks)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeRenderFrame(
     mut env: JNIEnv, _this: JObject, handle: jlong, tick: jint, width: jint, height: jint
 ) -> jbyteArray {
@@ -117,7 +117,7 @@ pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeRenderFra
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_app_stykanimate_android_NativeEngine_nativeClose(_env: JNIEnv, _this: JObject, handle: jlong) {
     if handle != 0 {
         // The Kotlin wrapper zeroes its handle after this call; close must be called once.
