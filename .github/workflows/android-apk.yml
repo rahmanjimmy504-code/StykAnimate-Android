@@ -56,7 +56,7 @@ jobs:
       - name: Build upstream Rust engine for Android ABIs
         working-directory: native/android-bridge
         run: |
-          cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -p 26 \
+          cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 --platform 26 \
             -o ../../app/src/main/jniLibs \
             build --release
       - name: Package original upstream assets and notices
